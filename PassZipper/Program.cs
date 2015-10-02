@@ -69,6 +69,7 @@ namespace PassZipper
             //ファイル名の余計なパスを消す
             string entryName = filename.Substring(folderOffset);
             entryName = ZipEntry.CleanName(entryName);
+            Console.WriteLine(entryName);
 
             //ファイル情報書き込み
             var newEntry = new ZipEntry(entryName)
@@ -105,7 +106,11 @@ namespace PassZipper
             {
                 return;
             }
+            Console.WriteLine("Zip files");
+            args.ToList().ForEach(x => Console.WriteLine(x));
+
             var passWord = GenerateZipPassword(20);
+            Console.WriteLine("password : " + passWord);
 
             //Create
             var outputPath = GetOutputPath();
