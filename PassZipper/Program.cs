@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
+using System.Windows.Forms;
 
 namespace PassZipper
 {
@@ -25,7 +26,7 @@ namespace PassZipper
         /// </summary>
         /// <param name="length">パスワードの文字数</param>
         /// <returns></returns>
-        static private string GenerateZipPassword(int length)
+        static public string GenerateZipPassword(int length)
         {
             //zipとファイル名に使えるキャラクタセット
             var sb = new StringBuilder(length);
@@ -40,7 +41,7 @@ namespace PassZipper
             return sb.ToString();
         }
 
-        static private void CompressFolder(string folderName, ZipOutputStream zipStream, string offsetFolderName)
+        static public void CompressFolder(string folderName, ZipOutputStream zipStream, string offsetFolderName)
         {
             //フォルダのオフセット値を取得
             var folderOffset = offsetFolderName.Length + (offsetFolderName.EndsWith("\\") ? 0 : 1);
@@ -59,7 +60,7 @@ namespace PassZipper
             });
         }
 
-        static private void CompressFile(string filename, ZipOutputStream zipStream, string offsetFolderName)
+        static public void CompressFile(string filename, ZipOutputStream zipStream, string offsetFolderName)
         {
             //フォルダのオフセット値を取得
             var folderOffset = offsetFolderName.Length + (offsetFolderName.EndsWith("\\") ? 0 : 1);
@@ -87,7 +88,7 @@ namespace PassZipper
             zipStream.CloseEntry();
         }
 
-        static private string GetOutputPath() {
+        static public string GetOutputPath() {
             if (!File.Exists(SettingFileName))
             {
                 File.WriteAllText(SettingFileName, DefaultPath);
@@ -99,39 +100,13 @@ namespace PassZipper
         /// メイン関数
         /// </summary>
         /// <param name="args"></param>
+        [STAThread]
         static void Main(string[] args)
         {
-            if (!args.Any(s => Directory.Exists(s) || File.Exists(s)))
-            {
-                return;
-            }
-            var passWord = GenerateZipPassword(20);
-
-            //Create
-            var outputPath = GetOutputPath();
-            var outputFilename = outputPath + "\\output pass=" + passWord + ".zip";
-
-            using (var fsOut = File.Create(outputFilename))
-            {
-                var zipStream = new ZipOutputStream(fsOut)
-                {
-                    Password = passWord,
-                };
-
-                var folders = args.Where(name => Directory.Exists(name)).ToList();
-                folders.ForEach(folder =>
-                {
-                    CompressFolder(folder, zipStream, Directory.GetParent(folder).FullName);
-                });
-                var files = args.Where(name => File.Exists(name)).ToList();
-                files.ForEach(file =>
-                {
-                    CompressFile(file, zipStream, new FileInfo(file).DirectoryName);
-                });
-                
-                zipStream.IsStreamOwner = true;
-                zipStream.Close();
-            }
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            var form = new Form1();
+            Application.Run(form);
         }
     }
 }
