@@ -110,6 +110,7 @@ namespace PassZipper
             //Create
             var outputPath = GetOutputPath();
             var outputFilename = outputPath + "\\output pass=" + passWord + ".zip";
+            File.WriteAllText(outputPath + "\\passwd pass=" + passWord + ".txt", passWord);
 
             using (var fsOut = File.Create(outputFilename))
             {
