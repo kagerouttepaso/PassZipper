@@ -1,0 +1,22 @@
+version: 1.0.{build}
+skip_tags: true
+configuration: Release
+platform: Any CPU
+build:
+  verbosity: minimal
+after_build:
+- cmd: >-
+    rm *.config
+
+    rm *.pdb
+artifacts:
+- path: PassZipper\bin\Release
+  name: package
+deploy:
+- provider: GitHub
+  tag: PassZipper-v$(appveyor_build_version)
+  release: PassZipper-v$(appveyor_build_version)
+  auth_token:
+    secure: mIDzKxLkLa+wkjGsczHx9NkmapjpkwBhkMzWA4wddjDV4o0RC1RM0Ct2jKyqwfBq
+  on:
+    branch: master
