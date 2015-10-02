@@ -11,7 +11,7 @@ namespace PassZipper
 {
     class Program
     {
-        static readonly string PasswordChars = @"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~@#$%^&()_+-=[]{},;`";
+        static readonly string PasswordChars = @"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~@()_+-=";
         static readonly string DefaultPath = ".";
         static readonly string SettingFileName = "setting.ini";
 
