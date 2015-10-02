@@ -11,7 +11,7 @@ namespace PassZipper
 {
     class Program
     {
-        static readonly string PasswordChars = @"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~@#$%^&()_+-=[]{},;`";
+        static readonly string PasswordChars = @"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~@()_+-=";
         static readonly string DefaultPath = ".";
         static readonly string SettingFileName = "setting.ini";
 
@@ -110,6 +110,7 @@ namespace PassZipper
             //Create
             var outputPath = GetOutputPath();
             var outputFilename = outputPath + "\\output pass=" + passWord + ".zip";
+            File.WriteAllText(outputPath + "\\passwd pass=" + passWord + ".txt", passWord);
 
             using (var fsOut = File.Create(outputFilename))
             {
