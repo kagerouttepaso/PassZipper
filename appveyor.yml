@@ -6,6 +6,8 @@ build:
   verbosity: minimal
 after_build:
 - cmd: >-
+    cd PassZipper/bin/Release
+
     rm *.config
 
     rm *.pdb
