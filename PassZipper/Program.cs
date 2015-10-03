@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
 using ZipToolKit;
 
@@ -93,7 +89,7 @@ namespace PassZipper
                     ZipTool.CompressFile(file, new FileInfo(file).DirectoryName, zipStream);
                 });
                 
-                //ファイル閉じる。
+                //ファイル閉じる
                 zipStream.IsStreamOwner = true;
                 zipStream.Close();
             }
