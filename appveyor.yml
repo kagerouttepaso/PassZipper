@@ -6,6 +6,8 @@ build:
   verbosity: minimal
 after_build:
 - cmd: >-
+    cp README.md PassZipper/bin/Release/readme.md
+
     cd PassZipper/bin/Release
 
     rm *.config
