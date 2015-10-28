@@ -71,8 +71,8 @@ namespace PassZipper
 
             //出力先のZipファイルを作成
             var outputPath = GetOutputPath();
-            var outputFilename = outputPath + "\\output pass=" + passWord + ".zip";
-            File.WriteAllText(outputPath + "\\passwd pass=" + passWord + ".txt", passWord);
+            var outputFilename = outputPath + "\\output.zip";
+            File.WriteAllText(outputPath + "\\passwd.txt", passWord);
             using (var fsOut = File.Create(outputFilename))
             {
                 var zipStream = new ZipOutputStream(fsOut)
