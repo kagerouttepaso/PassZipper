@@ -14,7 +14,7 @@ namespace PassZipper
         /// <summary>
         /// パスワードに使用できる文字
         /// </summary>
-        static public readonly string PasswordChars = @"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~@()_+-=";
+        static public readonly string PasswordChars = @"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@_+-=";
         
         /// <summary>
         /// デフォルトのZipファイル出力先
@@ -25,6 +25,11 @@ namespace PassZipper
         /// 設定ファイル名
         /// </summary>
         static public readonly string SettingFileName = "setting.ini";
+
+        /// <summary>
+        /// パスワードの文字数
+        /// </summary>
+        static public readonly int PasswordLength = 8;
 
     }
 
@@ -61,7 +66,7 @@ namespace PassZipper
             args.ToList().ForEach(x => Console.WriteLine(x));
 
             //パスワード生成
-            var passWord = ZipTool.GenerateZipPassword(20, Common.PasswordChars);
+            var passWord = ZipTool.GenerateZipPassword(Common.PasswordLength, Common.PasswordChars);
             Console.WriteLine("password : " + passWord);
 
             //出力先のZipファイルを作成
