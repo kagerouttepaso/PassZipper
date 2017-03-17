@@ -14,23 +14,34 @@ namespace PassZipper
         /// <summary>
         /// パスワードに使用できる文字
         /// </summary>
-        static public readonly string PasswordChars = @"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@_+-=";
-        
-        /// <summary>
-        /// デフォルトのZipファイル出力先
-        /// </summary>
-        static public readonly string DefaultPath = ".";
-
-        /// <summary>
-        /// 設定ファイル名
-        /// </summary>
-        static public readonly string SettingFileName = "setting.ini";
+        static public string PasswordChars = @"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@_+-=";
 
         /// <summary>
         /// パスワードの文字数
         /// </summary>
         static public readonly int PasswordLength = 8;
+        
+        /// <summary>
+        /// アプリケーションの格納フォルダ
+        /// </summary>
+        static public readonly string ApplicationPath = new FileInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).DirectoryName;
+        /// <summary>
+        /// 設定ファイルのフルパス
+        /// </summary>
+        static public readonly string SettingFilePath = ApplicationPath + @"\setting.txt";
+        static public readonly string TemplateFilePath = ApplicationPath + @"\template.txt";
 
+        /// <summary>
+        /// ZIPファイル名
+        /// </summary>
+        static public readonly string ZipFileName = "archive.zi_";
+
+        /// <summary>
+        /// パスワード名
+        /// </summary>
+        static public readonly string PassWordFileName = "password.txt";
+
+        static public readonly string PasswordKeyWord = "%PASSWORD%";
     }
 
     /// <summary>
@@ -38,15 +49,6 @@ namespace PassZipper
     /// </summary>
     class Program
     {
-        
-        static private string GetOutputPath() {
-            if (!File.Exists(Common.SettingFileName))
-            {
-                File.WriteAllText(Common.SettingFileName, Common.DefaultPath);
-            }
-            return File.ReadLines(Common.SettingFileName).First();
-        }
-
         /// <summary>
         /// メイン関数
         /// </summary>
@@ -61,8 +63,10 @@ namespace PassZipper
             {
                 return;
             }
+            Console.WriteLine("application path  : " + Common.ApplicationPath);
+            Console.WriteLine("setting file path : " + Common.SettingFilePath);
 
-            Console.WriteLine("Zip files");
+            //Console.WriteLine("Zip files");
             args.ToList().ForEach(x => Console.WriteLine(x));
 
             //パスワード生成
@@ -70,10 +74,14 @@ namespace PassZipper
             Console.WriteLine("password : " + passWord);
 
             //出力先のZipファイルを作成
-            var outputPath = GetOutputPath();
-            var outputFilename = outputPath + "\\output.zip";
-            File.WriteAllText(outputPath + "\\passwd.txt", passWord);
-            using (var fsOut = File.Create(outputFilename))
+            var outputDirName = GetOutputDirName(args);
+            var outputFileName = outputDirName + @"\" + Common.ZipFileName;
+
+            string passwordFileString = new StreamReader(Common.TemplateFilePath).ReadToEnd()
+                .Replace(Common.PasswordKeyWord, passWord);
+            File.WriteAllText(outputDirName + @"\" + Common.PassWordFileName, passwordFileString);
+
+            using (var fsOut = File.Create(outputFileName))
             {
                 var zipStream = new ZipOutputStream(fsOut)
                 {
@@ -93,11 +101,34 @@ namespace PassZipper
                 {
                     ZipTool.CompressFile(file, new FileInfo(file).DirectoryName, zipStream);
                 });
-                
+
                 //ファイル閉じる
                 zipStream.IsStreamOwner = true;
                 zipStream.Close();
             }
+        }
+
+        /// <summary>
+        /// 出力フォルダ設定
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        private static string GetOutputDirName(string[] args)
+        {
+            // ファイルなかったら作る
+            if (!File.Exists(Common.SettingFilePath))
+            {
+                using (var writer = new StreamWriter(Common.ApplicationPath))
+                {
+                    writer.WriteLine(Common.SettingFilePath);
+                }
+            }
+            string ret = "";
+            using (var reader = new StreamReader(Common.SettingFilePath))
+            {
+                ret = reader.ReadLine();
+            }
+            return ret;
         }
     }
 }
