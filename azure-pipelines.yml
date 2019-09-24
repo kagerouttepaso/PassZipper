@@ -39,9 +39,6 @@ steps:
       
       del *.config
       del *.pdb
-      del *.application
-      del *.manifest
-      rmdir /q /s app.publish
     workingDirectory: '$(Build.SourcesDirectory)\PassZipper\bin\Release'
 
 - task: ArchiveFiles@2
