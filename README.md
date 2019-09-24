@@ -1,6 +1,6 @@
 # PassZipper
 
-[![Build status](https://ci.appveyor.com/api/projects/status/v8mcf37c0rr5xnq7?svg=true)](https://ci.appveyor.com/project/kagerouttepaso/passzipper)
+[![Build Status](https://dev.azure.com/gothwasawasa/PassZipper/_apis/build/status/kagerouttepaso.PassZipper?branchName=master)](https://dev.azure.com/gothwasawasa/PassZipper/_build/latest?definitionId=10&branchName=master)
 
 パスワード付きジップファイルを作成するソフト
 
@@ -16,6 +16,10 @@
 20桁のパスワード付きのZIPファイルが出力されます。
 
 ZIPファイルの出力先は後記の設定ファイルから変更できます。
+
+## 設定
+
+`template.txt`を編集してパスワードファイルの出力される文面を変更することが出来ます。
 
 ## その他
 
