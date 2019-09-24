@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
+using System.Buffers;
 using System.IO;
+using System.Text;
 using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
 
 namespace ZipToolKit
 {
-    static class ZipTool
+    internal static class ZipTool
     {
-
         /// <summary>
         /// ランダム生成機
         /// </summary>
-        static private Random random = new Random();
+        private static Random Random { get; } = new Random();
 
         /// <summary>
         /// Zipファイルに使うランダムなパスワードを作成する
@@ -21,7 +20,7 @@ namespace ZipToolKit
         /// <param name="length">パスワードの文字数</param>
         /// <param name="passwordChars">パスワードに使う1バイト文字の並び</param>
         /// <returns>パスワード</returns>
-        static public string GenerateZipPassword(int length,string passwordChars)
+        public static string GenerateZipPassword(int length, string passwordChars)
         {
             //zipとファイル名に使えるキャラクタセット
             var sb = new StringBuilder(length);
@@ -29,7 +28,7 @@ namespace ZipToolKit
             for (int i = 0; i < length; i++)
             {
                 //ランダムな文字を選択
-                char c = passwordChars[random.Next(passwordChars.Length)];
+                char c = passwordChars[Random.Next(passwordChars.Length)];
                 sb.Append(c);
             }
 
@@ -39,36 +38,31 @@ namespace ZipToolKit
         /// <summary>
         /// フォルダを圧縮する
         /// </summary>
+        /// <param name="zipStream">圧縮先のZipStream</param>
         /// <param name="folderName">圧縮するフォルダのフルパス</param>
         /// <param name="offsetFolderName">圧縮時のルートフォルダのフルパス</param>
-        /// <param name="zipStream">圧縮先のZipStream</param>
-        static public void CompressFolder(string folderName, string offsetFolderName, ZipOutputStream zipStream)
+        public static void CompressFolder(ZipOutputStream zipStream, string folderName, string offsetFolderName)
         {
-            //フォルダのオフセット値を取得
-            var folderOffset = offsetFolderName.Length + (offsetFolderName.EndsWith("\\") ? 0 : 1);
-
             //フォルダの中にあるファイルを圧縮
-            var files = Directory.GetFiles(folderName);
-            files.ToList().ForEach(filename =>
+            foreach (var file in Directory.GetFiles(folderName))
             {
-                CompressFile(filename, offsetFolderName, zipStream);
-            });
+                CompressFile(zipStream, file, offsetFolderName);
+            }
 
             //子フォルダを再帰的に圧縮
-            var folders = Directory.GetDirectories(folderName);
-            folders.ToList().ForEach(folder =>
+            foreach (var folder in Directory.GetDirectories(folderName))
             {
-                CompressFolder(folder, offsetFolderName, zipStream);
-            });
+                CompressFolder(zipStream, folder, offsetFolderName);
+            }
         }
 
         /// <summary>
         /// ファイルを圧縮
         /// </summary>
+        /// <param name="zipStream">圧縮先のZipStream</param>
         /// <param name="filename">ファイル名フルパス</param>
         /// <param name="offsetFolderName">圧縮時のルートフォルダのフルパス</param>
-        /// <param name="zipStream">圧縮先のZipStream</param>
-        static public void CompressFile(string filename, string offsetFolderName, ZipOutputStream zipStream)
+        public static void CompressFile(ZipOutputStream zipStream, string filename, string offsetFolderName)
         {
             //フォルダのオフセット値を取得
             var folderOffset = offsetFolderName.Length + (offsetFolderName.EndsWith("\\") ? 0 : 1);
@@ -79,7 +73,7 @@ namespace ZipToolKit
 
             //圧縮するファイルを表示←非常に良くない
             Console.WriteLine(entryName);
-             
+
             //ファイル情報書き込み
             var fi = new FileInfo(filename);
             var newEntry = new ZipEntry(entryName)
@@ -88,15 +82,26 @@ namespace ZipToolKit
                 Size = fi.Length,
             };
             zipStream.PutNextEntry(newEntry);
-
-            //ファイル内容書き込み
-            var buffer = new byte[4096];
-            using (var streamReader = File.OpenRead(filename))
+            try
             {
-                StreamUtils.Copy(streamReader, zipStream, buffer);
+                var buffer = ArrayPool<byte>.Shared.Rent(4096);
+                try
+                {
+                    //ファイル内容書き込み
+                    using (FileStream sr = File.OpenRead(filename))
+                    {
+                        StreamUtils.Copy(sr, zipStream, buffer);
+                    }
+                }
+                finally
+                {
+                    ArrayPool<byte>.Shared.Return(buffer);
+                }
             }
-
-            zipStream.CloseEntry();
+            finally
+            {
+                zipStream.CloseEntry();
+            }
         }
     }
 }
