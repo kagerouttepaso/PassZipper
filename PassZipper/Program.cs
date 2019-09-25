@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Fody;
 using ICSharpCode.SharpZipLib.Zip;
 using ZipToolKit;
 
@@ -10,6 +11,7 @@ namespace PassZipper
     /// <summary>
     /// プログラムのメインクラス
     /// </summary>
+    [ConfigureAwait(false)]
     internal class Program
     {
         /// <summary>

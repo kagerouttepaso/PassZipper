@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("PassZipper")]
-[assembly: AssemblyCopyright("Copyright ©  2015 kitsunai")]
+[assembly: AssemblyCopyright("Copyright © 2015-2019 kitsunai")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
